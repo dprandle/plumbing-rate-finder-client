@@ -1,0 +1,103 @@
+@font-face {
+  font-family: 'montserrat';
+  src: url('/fonts/Montserrat-VariableFont_wght.ttf');
+}
+
+body {
+    font-family: 'montserrat';
+}
+
+.flex-container-col {
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
+}
+
+/*This is the metric section input item*/
+.calc-metric-input-label {
+    display: block;
+}
+
+.calc-metric-input-input {
+    box-sizing: border-box;
+    height: 30px;
+    width: 100%;
+    background-color: white;;
+    border: 2px solid black;
+    border-radius: 6px;
+    padding: 1px 10px 1px 10px;
+    outline: none;
+}
+
+.calc-metric-input-input:focus {
+    outline: 2px solid #5a7bff;
+}
+
+.calc-metric-input-element {
+    font-size: 0.8em;
+    font-weight: 700;
+    padding: 10px 20px;
+}
+
+/*This is the metric section total item*/
+.calc-metric-total-element {
+    font-size: 0.8em;
+    font-weight: 700;
+    padding: 10px;
+    background-color: #5a7bff;
+    color: white;
+    width: 70%;
+    border-radius: 5px;
+    margin: auto;
+}
+
+.calc-metric-total-label {
+    display: block;
+}
+
+.calc-metric-total-value {
+    font-size: 1.5em;
+}
+
+.calc-metric-total-wrapper {
+    padding: 10px 10px 20px;
+}
+
+.calc-body {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+}
+
+.calc-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.5em;
+    padding: 20px 0px;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.gray-bg {
+    background-color: #323232;
+}
+
+.gray-text {
+    color: #323232;
+}
+
+.white-text {
+    color: white;
+}
+
+.yellow-bg {
+    background-color: #ffde5a;
+}
+
+.yellow-text {
+    color: #ffde5a
+}
+
+.header {
+    text-align: center;
+}
+
