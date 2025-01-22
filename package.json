@@ -7,7 +7,7 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "deploy": "npm run build && cp -r dist/* ../plumbing-rate-finder-server/public"
+        "deploy": "rm -rf ../plumbing-rate-finder-server/public/* && npm run build && cp -r dist/* ../plumbing-rate-finder-server/public"
     },
     "dependencies": {
         "react": "^18.3.1",

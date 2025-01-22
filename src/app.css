@@ -73,8 +73,15 @@ body {
     text-align: center;
     font-weight: 700;
     font-size: 1.5em;
-    padding: 20px 0px;
+    padding: 20px 10px;
     border-radius: 10px 10px 0px 0px;
+}
+
+.calc-section {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2em;
+    padding: 10px 0px;
 }
 
 .gray-bg {
@@ -99,5 +106,49 @@ body {
 
 .header {
     text-align: center;
+}
+
+.expense-section {
+    padding: 10px;
+}
+
+.top-level-expense {
+    margin-bottom: 30px;
+    border: 4px solid #323232;
+    border-top: none;
+
+}
+
+.nested-expense {
+}
+
+.expense-input-group {
+    border-top: 1px solid #323232;
+    margin-bottom: 10px;
+}
+
+
+.expanding-button {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    width: 100%;
+    font-weight: 700;
+    font-size: 1em;
+    padding: 6px 10px;
+    background-color: transparent;
+    font-family: 'montserrat';
+}
+
+.expanding-button-value {
+    font-size: 1.2em;
+}
+
+.expanding-button-name {
+}
+
+.expanding-button:hover {
+    text-decoration: underline;
 }
 
