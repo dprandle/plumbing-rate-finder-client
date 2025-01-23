@@ -4,11 +4,13 @@ import { createRoot } from 'react-dom/client'
 import './app.css'
 
 function item_annual_total_func() {
-    let tot = this.children.reduce((sum, cur) => sum + cur.annual(), 0);
-    if (tot < 0.001) {
-        tot = this.annual_base;
+    if (this.children.length > 0) {
+        const ret = this.children.reduce((sum, cur) => sum + cur.annual(), 0);
+        return ret;
     }
-    return tot;
+    else {
+        return this.annual_base;
+    }
 }
 
 function get_default_expense(name, amount) {
@@ -168,11 +170,14 @@ const default_expenses = [
     }
 ]
 
-function CalcInputElement({ label, type, name, value }) {
+function CalcInputElement({ label, type, name, value, on_update_value }) {
+    const on_change = (e) => {
+        on_update_value(Number(e.target.value));
+    }
     return (
         <div className="calc-metric-input-element">
             <label className="calc-metric-input-label" for={name}>{label}</label>
-            <input className="calc-metric-input-input" id={name} type={type} value={value} />
+            <input className="calc-metric-input-input" id={name} type={type} value={value} onChange={on_change} />
         </div>
     )
 }
@@ -181,7 +186,7 @@ function CategoryButton({ name, value, cat_button_style_obj }) {
     return <button className="expanding-button gray-text" style={cat_button_style_obj}><div>{name}</div><div>${value}</div></button>
 }
 
-function ExpenseCategoryItem({ current_obj, top_level, current_obj_arr, update_expense_cb}) {
+function ExpenseCategoryItem({ current_obj, top_level, current_obj_arr, update_expense_cb }) {
     const cat_button_style_obj = {
         fontSize: (top_level) ? '1.2em' : '1em',
         color: (top_level) ? 'white' : 'inherit',
@@ -192,7 +197,7 @@ function ExpenseCategoryItem({ current_obj, top_level, current_obj_arr, update_e
 
     const per_cat_func = (current_obj, index, arr) => {
         return (
-            <ItemOrCategory current_obj={current_obj} current_obj_arr={arr} update_expense_cb={update_expense_cb}/>
+            <ItemOrCategory current_obj={current_obj} current_obj_arr={arr} update_expense_cb={update_expense_cb} />
         );
     };
 
@@ -221,27 +226,27 @@ function ExpenseCategoryItem({ current_obj, top_level, current_obj_arr, update_e
     }
 }
 
-function ExpenseInputItem({ current_obj, update_expense_cb}) {
-    const on_change = (e) => {}
-    return <CalcInputElement label={current_obj.name} type={'number'} name={current_obj.name} value={current_obj.annual()} />
+function ExpenseInputItem({ current_obj, update_expense_cb }) {
+    const on_update_value = (new_val) => {
+        current_obj.annual_base = new_val;
+        update_expense_cb();
+    }
+    return <CalcInputElement label={current_obj.name} type={'number'} name={current_obj.name} value={current_obj.annual()} on_update_value={on_update_value} />
 }
 
-function ItemOrCategory({ current_obj, current_obj_arr, update_expense_cb}) {
+function ItemOrCategory({ current_obj, current_obj_arr, update_expense_cb }) {
     if (current_obj.children.length > 0) {
-        return <ExpenseCategoryItem current_obj={current_obj} top_level={false} current_obj_arr={current_obj_arr} update_expense_cb={update_expense_cb}/>
+        return <ExpenseCategoryItem current_obj={current_obj} top_level={false} current_obj_arr={current_obj_arr} update_expense_cb={update_expense_cb} />
     }
     else {
-        return <ExpenseInputItem current_obj={current_obj} update_expense_cb={update_expense_cb}/>
+        return <ExpenseInputItem current_obj={current_obj} update_expense_cb={update_expense_cb} />
     }
 }
 
 function ExpensesCategories({ expenses, update_expense_cb }) {
     let per_cat_func = (current_obj, index, arr) => {
-        const update_obj_cb = () => {
-            
-        }
         return (
-            <ExpenseCategoryItem current_obj={current_obj} top_level={true} current_obj_arr={arr} update_expense_cb={update_expense_cb}/>
+            <ExpenseCategoryItem current_obj={current_obj} top_level={true} current_obj_arr={arr} update_expense_cb={update_expense_cb} />
         );
     };
     return (
@@ -275,21 +280,29 @@ function CalcMetricTotal({ label, value }) {
     )
 }
 
+function calculate_billable_hours(wd_per_year, service_vehicles, billable_hours_percent) {
+    return Math.round(wd_per_year * service_vehicles * 8 * (billable_hours_percent / 100));
+}
+
 function CalcInput() {
+    const [wd_per_year, set_wd_per_year] = useState(260);
+    const [service_vehicles, set_service_vehicles] = useState(3);
+    const [billable_hours_percent, set_billable_hours_percent] = useState(55);
+
     return (
         <div className="gray-text yellow-bg">
-            <CalcInputElement label={"Work Days Per Year"} type={"number"} name={"annual_work_days"} value={260} />
-            <CalcInputElement label={"Number of Service Vehicles"} type={"number"} name={"service_vehicle_cnt"} value={1} />
-            <CalcInputElement label={"% Billable Hours Sold (55% is standard)"} type={"number"} name={"percent_sold_billable_hrs"} value={55} />
+            <CalcInputElement label={"Work Days Per Year"} type={"number"} name={"annual_work_days"} value={wd_per_year} on_update_value={set_wd_per_year} />
+            <CalcInputElement label={"Number of Service Vehicles"} type={"number"} name={"service_vehicle_cnt"} value={service_vehicles} on_update_value={set_service_vehicles} />
+            <CalcInputElement label={"% Billable Hours Sold (55% is standard)"} type={"number"} name={"percent_sold_billable_hrs"} value={billable_hours_percent} on_update_value={set_billable_hours_percent} />
             <div className="calc-metric-total-wrapper">
-                <CalcMetricTotal label={"Annual Billable Hours"} value={3432} />
+                <CalcMetricTotal label={"Annual Billable Hours"} value={calculate_billable_hours(wd_per_year, service_vehicles, billable_hours_percent)} />
             </div>
         </div>
     )
 }
 
 
-function Expenses({ expenses, update_expense_cb}) {
+function Expenses({ expenses, update_expense_cb }) {
     return (
         <div className="gray-bg">
             <div className="calc-section white-text gray-bg">OPERATING EXPENSES</div>
@@ -303,19 +316,10 @@ function Expenses({ expenses, update_expense_cb}) {
 function RateCalc() {
     const [expenses, set_expenses] = useState(default_expenses);
 
-    const update_expense = (inds, annual_base) => {
-        if (inds.length === 3) {
-            expenses[inds[0]].children[inds[1]].children[2].annual_base = annual_base;
-        }
-        else if (inds.length === 2) {
-            expenses[inds[0]].children[inds[1]].annual_base = annual_base;
-        }
-        else {
-            console.log("Uh oh");
-        }
-        set_expenses(expenses);
+    const update_expense = () => {
+        set_expenses([...expenses]);
     };
-
+    
     return (
         <div className="calc-body">
             <CalcTitle />
