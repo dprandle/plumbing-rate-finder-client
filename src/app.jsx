@@ -185,7 +185,10 @@ const default_expenses = [
     },
 ];
 
+const SALARY_CAT_INDEX = 0;
 const TAX_CAT_INDEX = 1;
+const OPERATING_CAT_INDEX = 2;
+const GROWTH_CAT_INDEX = 3;
 
 function CalcInputElement({ label, type, name, value, on_update_value, step = 1 }) {
     const on_change = (e) => {
@@ -247,7 +250,7 @@ function ExpenseCategoryItem({ current_obj, top_level, current_obj_arr, update_e
                     on_click={() => set_expanded(!expanded)}
                     icon_class={!expanded ? "svg-expand" : "svg-collapse"}
                 />
-                {expanded && <div className="expense-input-group">TEXT {current_obj.children.map(per_cat_func)}</div>}
+                {expanded && <div className="expense-input-group">{current_obj.children.map(per_cat_func)}</div>}
             </div>
         );
     };
@@ -289,21 +292,21 @@ function ExpenseInputItem({ current_obj, update_expense_cb, hours_per_year }) {
         <div className="expense-input-element">
             <div>{current_obj.name}</div>
             <CalcInputElement
-                label={"Per Year"}
+                label={"$/year"}
                 type={"number"}
                 value={current_obj.annual().toFixed(2)}
                 on_update_value={on_update_annual_value}
                 step={1000}
             />
             <CalcInputElement
-                label={"Per Month"}
+                label={"$/month"}
                 type={"number"}
                 value={(current_obj.annual() / 12).toFixed(2)}
                 on_update_value={on_update_monthly_value}
                 step={1}
             />
             <CalcInputElement
-                label={"Per Hour"}
+                label={"$/hour"}
                 type={"number"}
                 value={(current_obj.annual() / hours_per_year).toFixed(2)}
                 on_update_value={on_update_hourly_value}
@@ -406,7 +409,7 @@ function CalcInput({
                 on_update_value={set_service_vehicles}
             />
             <CalcInputElement
-                label={"% Billable Hours Sold (55% is standard)"}
+                label={"Billable Hours Sold %"}
                 type={"number"}
                 name={"percent_sold_billable_hrs"}
                 value={billable_hours_percent}
@@ -450,6 +453,9 @@ function RateCalc() {
     const [wd_per_year, set_wd_per_year] = useState(260);
     const [service_vehicles, set_service_vehicles] = useState(3);
     const [billable_hours_percent, set_billable_hours_percent] = useState(55);
+    const update_service_vehicles = () => {
+        
+    };
     const update_expenses = () => {
         set_expenses([...expenses]);
     };

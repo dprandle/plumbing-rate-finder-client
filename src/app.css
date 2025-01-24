@@ -34,8 +34,9 @@ body {
 }
 
 .calc-metric-input-element {
+    font-size: 0.9em;    
     font-weight: 700;
-    padding: 10px 20px;
+    padding: 10px 10px;
 }
 
 /*This is the metric section total item*/
@@ -54,10 +55,12 @@ body {
 }
 
 .calc-metric-total-value {
+    font-size: 1.2em;
 }
 
 .calc-metric-total-wrapper {
     padding: 10px 10px 20px;
+    font-size: 0.9em;
 }
 
 .calc-body {
@@ -68,8 +71,10 @@ body {
 
 .calc-title {
     text-align: center;
+    font-size: 1.2em;
     font-weight: 700;
     padding: 20px 10px;
+    border-radius: 10px 10px 0px 0px;
 }
 
 .calc-section {
@@ -104,12 +109,12 @@ body {
 
 /* This is the operating expenses card section */
 .expense-section {
-    padding: 10px;
+    padding: 6px;
+    font-size: 1.111em;
 }
 
 .top-level-expense {
-    font-size: 1.5em;
-    margin: 5px 0px
+    padding: 5px 10px;
 }
 
 .top-level-expense:hover {
@@ -126,29 +131,31 @@ body {
 }
 
 .expense-input-group {
+    font-size: 0.9em;
     font-weight: 700;
-    padding: 0px 0px 10px 20px;
+    padding: 0px 0px 10px 2px;
 }
 
 .expense-input-element {
-    
+    padding: 10px 0px;
 }
 
-/* button { */
-/*     font-size: inherit; */
-/*     font-family: inherit; */
-/* } */
+button {
+    font-size: inherit;
+    font-family: inherit;
+}
 
 .expanding-button {
     border: none;
     display: flex;
+    font-size: 0.9em;
     background-color: inherit;
     justify-content: space-between;
     border-radius: 10px;
     text-align: left;
     width: 100%;
     font-weight: 700;
-    padding: 6px 0px 6px 6px;
+    padding: 6px 0px 6px 0px;
 }
 
 .expanding-button:hover {
