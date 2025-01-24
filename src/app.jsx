@@ -21,6 +21,20 @@ function get_default_expense(name, amount) {
     };
 }
 
+function numstr2_comma(num) {
+    return num.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
+
+function numstr_comma(num) {
+    return num.toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    });
+}
+
 const defualt_owner = [get_default_expense("Base Pay", 120000), get_default_expense("Bonuses", 0)];
 
 const defualt_techs = [
@@ -63,8 +77,9 @@ const default_insurance = [
 ];
 
 const default_shop_utils = [
-    get_default_expense("Rent", 3000),
+    get_default_expense("Rent", 36000),
     get_default_expense("Gas", 3800),
+    get_default_expense("Electric", 2700),
     get_default_expense("Water/Sewer", 12000),
     get_default_expense("Dumpster", 3600),
     get_default_expense("Internet", 1440),
@@ -104,16 +119,20 @@ const default_advertising = [
 ];
 
 const default_professional = [
-    get_default_expense("Contractor License", 2485),
+    get_default_expense("Contractor License", 2483.45),
+    get_default_expense("CC Fees", 30000),
     get_default_expense("Bookkeeping", 7200),
+    get_default_expense("Losses/Refunds", 8000),
     get_default_expense("Tax Preparation", 2000),
     get_default_expense("Coaching", 12000),
     get_default_expense("Google Suite", 600),
     get_default_expense("Service Titan", 3600),
     get_default_expense("Uniforms/Merch", 4000),
     get_default_expense("Replacement Tools", 6000),
-    get_default_expense("Office Supplies", 7200),
+    get_default_expense("Office Supplies", 2800), // Includes phone supplies
 ];
+
+const DEFAULT_VEHICLES_NAME = "Vehicles";
 
 const default_other_expenses = [
     {
@@ -129,7 +148,7 @@ const default_other_expenses = [
         children: default_shop_utils,
     },
     {
-        name: "Vehicles",
+        name: DEFAULT_VEHICLES_NAME,
         annual_base: 0,
         annual: item_annual_total_func,
         children: default_vehicles,
@@ -169,7 +188,9 @@ const default_expenses = [
     },
     {
         name: "Employer Taxes",
-        percent: 10,
+        annual_base: 0,
+        annual: item_annual_total_func,
+        children: [],
     },
     {
         name: "Operating",
@@ -184,6 +205,16 @@ const default_expenses = [
         children: default_12_month_growth,
     },
 ];
+
+function find_vehicle_sub_category(operating_expenses) {
+    for (let i = 0; i < operating_expenses.length; ++i) {
+        console.log("Looking at name: " + operating_expenses[i].name);
+        if (operating_expenses[i].name.toLowerCase().includes(DEFAULT_VEHICLES_NAME.toLowerCase())) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 const SALARY_CAT_INDEX = 0;
 const TAX_CAT_INDEX = 1;
@@ -211,67 +242,39 @@ function CalcInputElement({ label, type, name, value, on_update_value, step = 1 
     );
 }
 
-function CategoryButton({ name, value, cat_button_style_obj, on_click, icon_class }) {
+function CategoryButton({ name, value, hours_per_year, on_click, icon_class }) {
+    const hourly = value / hours_per_year;
     return (
-        <button className="expanding-button gray-text" style={cat_button_style_obj} onClick={on_click}>
-            <div>{name}</div>
-            <div>
-                ${value}
-                <span className={"icon " + icon_class} />
-            </div>
+        <button className="expanding-button gray-text" onClick={on_click}>
+            <ExpenseCatValue name={name} annual={value} hourly={hourly} icon_class={icon_class} />
         </button>
     );
 }
 
-function ExpenseCategoryItem({ current_obj, top_level, current_obj_arr, update_expense_cb, hours_per_year }) {
-    const cat_button_style_obj = {
-        //fontSize: top_level ? "1.2em" : "1em",
-    };
-
-    const per_cat_func = (current_obj, index, arr) => {
+function ExpenseCategoryItem({ current_obj, top_level, update_expense_cb, hours_per_year }) {
+    const per_cat_func = (current_obj) => {
         return (
             <ItemOrCategory
                 current_obj={current_obj}
-                current_obj_arr={arr}
                 update_expense_cb={update_expense_cb}
                 hours_per_year={hours_per_year}
             />
         );
     };
 
-    const draw_func = () => {
-        const [expanded, set_expanded] = useState(false);
-        return (
-            <div className={top_level ? "top-level-expense" : "nested-expense"}>
-                <CategoryButton
-                    name={current_obj.name}
-                    value={current_obj.annual().toFixed(2)}
-                    cat_button_style_obj={cat_button_style_obj}
-                    on_click={() => set_expanded(!expanded)}
-                    icon_class={!expanded ? "svg-expand" : "svg-collapse"}
-                />
-                {expanded && <div className="expense-input-group">{current_obj.children.map(per_cat_func)}</div>}
-            </div>
-        );
-    };
-
-    const draw_tax_func = () => {
-        return (
-            <div className={"top-level-expense"}>
-                <CategoryButton
-                    name={current_obj.name}
-                    value={calculate_employer_taxes(current_obj_arr[0], current_obj.percent).toFixed(2)}
-                    cat_button_style_obj={cat_button_style_obj}
-                />
-            </div>
-        );
-    };
-
-    if (top_level && current_obj.name === "Employer Taxes") {
-        return draw_tax_func();
-    } else {
-        return draw_func();
-    }
+    const [expanded, set_expanded] = useState(false);
+    return (
+        <div className={top_level ? "top-level-expense" : "nested-expense"}>
+            <CategoryButton
+                name={current_obj.name}
+                value={current_obj.annual()}
+                hours_per_year={hours_per_year}
+                on_click={() => set_expanded(!expanded)}
+                icon_class={current_obj.children.length > 0 && !expanded ? "svg-expand" : "svg-collapse"}
+            />
+            {expanded && <div className="expense-input-group">{current_obj.children.map(per_cat_func)}</div>}
+        </div>
+    );
 }
 
 function ExpenseInputItem({ current_obj, update_expense_cb, hours_per_year }) {
@@ -316,13 +319,12 @@ function ExpenseInputItem({ current_obj, update_expense_cb, hours_per_year }) {
     );
 }
 
-function ItemOrCategory({ current_obj, current_obj_arr, update_expense_cb, hours_per_year }) {
+function ItemOrCategory({ current_obj, update_expense_cb, hours_per_year }) {
     if (current_obj.children.length > 0) {
         return (
             <ExpenseCategoryItem
                 current_obj={current_obj}
                 top_level={false}
-                current_obj_arr={current_obj_arr}
                 update_expense_cb={update_expense_cb}
                 hours_per_year={hours_per_year}
             />
@@ -339,12 +341,11 @@ function ItemOrCategory({ current_obj, current_obj_arr, update_expense_cb, hours
 }
 
 function ExpensesCategories({ expenses, update_expense_cb, hours_per_year }) {
-    let per_cat_func = (current_obj, index, arr) => {
+    const per_cat_func = (current_obj, index, arr) => {
         return (
             <ExpenseCategoryItem
                 current_obj={current_obj}
                 top_level={true}
-                current_obj_arr={arr}
                 update_expense_cb={update_expense_cb}
                 hours_per_year={hours_per_year}
             />
@@ -391,6 +392,11 @@ function CalcInput({
     set_billable_hours_percent,
     tax_percent,
     update_tax_percent,
+    desired_profit,
+    update_desired_profit,
+    min_hourly,
+    actual_hourly,
+    update_actual_hourly,
 }) {
     return (
         <div className="gray-text yellow-bg">
@@ -428,14 +434,57 @@ function CalcInput({
                 value={tax_percent}
                 on_update_value={update_tax_percent}
             />
+            <CalcInputElement
+                label={"Desired Profit %"}
+                type={"number"}
+                value={desired_profit}
+                on_update_value={update_desired_profit}
+            />
+            <div className="calc-metric-total-wrapper">
+                <CalcMetricTotal label={"Minimum Hourly Rate"} value={"$" + numstr2_comma(min_hourly)} />
+            </div>
+            <CalcInputElement
+                label={"Actual Hourly Rate $/hr"}
+                type={"number"}
+                value={actual_hourly}
+                on_update_value={update_actual_hourly}
+            />
         </div>
     );
 }
 
-function Expenses({ expenses, update_expense_cb, hours_per_year }) {
+function calculate_total_expenses(expenses) {
+    return expenses.reduce((sum, cur) => sum + cur.annual(), 0);
+}
+
+function ExpenseCatValue({ name, hourly, annual, icon_class = "" }) {
     return (
-        <div className="gray-bg">
-            <div className="calc-section white-text gray-bg">EXPENSES</div>
+        <div className="cat-total-grid">
+            <div className="justify-left">{name}</div>
+            <div className="font-sz-sm">${numstr2_comma(hourly)}/hr</div>
+            <div>${numstr_comma(annual)}</div>
+            <div className={"icon " + icon_class} />
+        </div>
+    );
+}
+
+function HoursReqCatValue({ name, daily, weekly, extra_style="summary-item-padding"}) {
+    return (
+        <div className={"cat-total-grid " + extra_style}>
+            <div className="justify-left">{name}</div>
+            <div>{daily}</div>
+            <div>{weekly}</div>
+            <div className={"icon"} />
+        </div>
+    );
+}
+
+function Expenses({ expenses, update_expense_cb, hours_per_year, tot_expenses, tot_per_hr_expense }) {
+    return (
+        <>
+            <div className="calc-section white-text gray-bg">
+                <ExpenseCatValue name={"EXPENSES"} hourly={tot_per_hr_expense} annual={tot_expenses} />
+            </div>
             <div className="gray-text yellow-bg expense-section">
                 <ExpensesCategories
                     expenses={expenses}
@@ -443,26 +492,98 @@ function Expenses({ expenses, update_expense_cb, hours_per_year }) {
                     hours_per_year={hours_per_year}
                 />
             </div>
-        </div>
+        </>
+    );
+}
+
+function ProfitSummary({ actual_hourly_rate, work_days_per_year, tot_expenses }) {
+    const min_daily_exp = tot_expenses / work_days_per_year;
+    const exp_daily = min_daily_exp / actual_hourly_rate;
+    const pft10_daily = min_daily_exp / (actual_hourly_rate * 0.9);
+    const pft20_daily = min_daily_exp / (actual_hourly_rate * 0.8);
+    const pft30_daily = min_daily_exp / (actual_hourly_rate * 0.7);
+
+    return (
+        <>
+            <div className="calc-section white-text gray-bg">
+                <HoursReqCatValue name={"HOURS REQUIRED AT $" + actual_hourly_rate.toFixed(2) + "/hr"} daily={"DAILY"} weekly={"WEEKLY"} extra_style={""}/>
+            </div>
+            <div className="gray-text yellow-bg summary-section">
+                <HoursReqCatValue
+                    name={"Expenses"}
+                    daily={exp_daily.toFixed(2) + " hrs"}
+                    weekly={(exp_daily * 5).toFixed(2) + " hrs"}
+                />
+                <HoursReqCatValue
+                    name={"10% Profit"}
+                    daily={pft10_daily.toFixed(2) + " hrs"}
+                    weekly={(pft10_daily * 5).toFixed(2) + " hrs"}
+                />
+                <HoursReqCatValue
+                    name={"20% Profit"}
+                    daily={pft20_daily.toFixed(2) + " hrs"}
+                    weekly={(pft20_daily * 5).toFixed(2) + " hrs"}
+                />
+                <HoursReqCatValue
+                    name={"30% Profit"}
+                    daily={pft30_daily.toFixed(2) + " hrs"}
+                    weekly={(pft30_daily * 5).toFixed(2) + " hrs"}
+                />
+            </div>
+        </>
     );
 }
 
 function RateCalc() {
     const [expenses, set_expenses] = useState(default_expenses);
-
     const [wd_per_year, set_wd_per_year] = useState(260);
     const [service_vehicles, set_service_vehicles] = useState(3);
     const [billable_hours_percent, set_billable_hours_percent] = useState(55);
-    const update_service_vehicles = () => {
-        
-    };
+    const [tax_percent, set_tax_percent] = useState(10);
+    const [desired_profit, set_desired_profit] = useState(30);
+
+    expenses[TAX_CAT_INDEX].annual_base = calculate_employer_taxes(expenses[SALARY_CAT_INDEX], tax_percent);
+    const billable_hrs = calculate_billable_hours(wd_per_year, service_vehicles, billable_hours_percent);
+    const tot_expenses = calculate_total_expenses(expenses);
+    const tot_per_hr_expense = tot_expenses / billable_hrs;
+    const min_hourly = (tot_per_hr_expense / (100 - desired_profit)) * 100;
+
+    const [actual_hourly, set_actual_hourly] = useState(Math.round(min_hourly * 1.05));
+
     const update_expenses = () => {
         set_expenses([...expenses]);
     };
+
+    // Update each item in the vehicle sub category of operating expenses to reflect the new number of service vehicles
+    const update_service_vehicles = (new_val) => {
+        const vehicle_sub_cat = find_vehicle_sub_category(expenses[OPERATING_CAT_INDEX].children);
+        if (vehicle_sub_cat != -1) {
+            // Divide annual expenses by current service vehicle number to get each expense per vehicle, then multiply by the new service vehicle number
+            expenses[OPERATING_CAT_INDEX].children[vehicle_sub_cat].children.map((cur_exp) => {
+                const cur_annual_per_vehicle = cur_exp.annual() / service_vehicles;
+                cur_exp.annual_base = cur_annual_per_vehicle * new_val;
+            });
+        } else {
+            console.log("Vehicle operating sub category has been removed");
+        }
+        set_service_vehicles(new_val);
+        set_expenses([...expenses]);
+    };
+
     const update_tax_percent = (new_val) => {
-        expenses[TAX_CAT_INDEX].percent = new_val;
+        set_tax_percent(new_val);
         update_expenses();
     };
+
+    const update_desired_profit = (new_val) => {
+        const billable_hrs = calculate_billable_hours(wd_per_year, service_vehicles, billable_hours_percent);
+        const tot_expenses = calculate_total_expenses(expenses);
+        const tot_per_hr_expense = tot_expenses / billable_hrs;
+        const min_hourly = (tot_per_hr_expense / (100 - new_val)) * 100;
+        set_actual_hourly(Math.round(min_hourly * 1.05));
+        set_desired_profit(new_val);
+    };
+
     return (
         <div className="calc-body">
             <CalcTitle />
@@ -470,16 +591,28 @@ function RateCalc() {
                 wd_per_year={wd_per_year}
                 set_wd_per_year={set_wd_per_year}
                 service_vehicles={service_vehicles}
-                set_service_vehicles={set_service_vehicles}
+                set_service_vehicles={update_service_vehicles}
                 billable_hours_percent={billable_hours_percent}
                 set_billable_hours_percent={set_billable_hours_percent}
-                tax_percent={expenses[TAX_CAT_INDEX].percent}
+                tax_percent={tax_percent}
                 update_tax_percent={update_tax_percent}
+                desired_profit={desired_profit}
+                update_desired_profit={update_desired_profit}
+                min_hourly={min_hourly}
+                actual_hourly={actual_hourly}
+                update_actual_hourly={set_actual_hourly}
             />
             <Expenses
                 expenses={expenses}
                 update_expense_cb={update_expenses}
-                hours_per_year={calculate_billable_hours(wd_per_year, service_vehicles, billable_hours_percent)}
+                hours_per_year={billable_hrs}
+                tot_expenses={tot_expenses}
+                tot_per_hr_expense={tot_per_hr_expense}
+            />
+            <ProfitSummary
+                actual_hourly_rate={actual_hourly}
+                work_days_per_year={wd_per_year}
+                tot_expenses={tot_expenses}
             />
         </div>
     );

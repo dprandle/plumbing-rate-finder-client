@@ -1,10 +1,11 @@
 @font-face {
-  font-family: 'montserrat';
-  src: url('/fonts/Montserrat-VariableFont_wght.ttf');
+    font-family: "montserrat";
+    src: url("/fonts/Montserrat-VariableFont_wght.ttf");
 }
 
 body {
-    font-family: 'montserrat';
+    font-family: "montserrat";
+    font-weight: 700;
 }
 
 .flex-container-col {
@@ -22,7 +23,7 @@ body {
     box-sizing: border-box;
     height: 30px;
     width: 100%;
-    background-color: white;;
+    background-color: white;
     border: 2px solid black;
     border-radius: 6px;
     padding: 1px 10px 1px 10px;
@@ -34,15 +35,14 @@ body {
 }
 
 .calc-metric-input-element {
-    font-size: 0.9em;    
-    font-weight: 700;
+    font-size: 0.85em;
     padding: 10px 10px;
 }
 
 /*This is the metric section total item*/
 .calc-metric-total-element {
-    font-weight: 700;
     padding: 10px;
+    text-align: center;
     background-color: #5a7bff;
     color: white;
     width: 70%;
@@ -52,6 +52,7 @@ body {
 
 .calc-metric-total-label {
     display: block;
+    font-size: 0.9em;
 }
 
 .calc-metric-total-value {
@@ -59,28 +60,27 @@ body {
 }
 
 .calc-metric-total-wrapper {
-    padding: 10px 10px 20px;
-    font-size: 0.9em;
+    padding: 10px;
+    font-size: 0.85em;
 }
 
 .calc-body {
     width: 100%;
     max-width: 600px;
-    margin: auto;
+    margin: 0px auto 100px;
+    
 }
 
 .calc-title {
     text-align: center;
-    font-size: 1.2em;
-    font-weight: 700;
     padding: 20px 10px;
     border-radius: 10px 10px 0px 0px;
 }
 
 .calc-section {
-    text-align: center;
-    font-weight: 700;
-    padding: 10px 0px;
+    font-size: 1.1em;
+    /* The left/right padding add up to totals are so it aligns with the items below it */
+    padding: 10px 6px 10px 16px;
 }
 
 .gray-bg {
@@ -100,7 +100,7 @@ body {
 }
 
 .yellow-text {
-    color: #ffde5a
+    color: #ffde5a;
 }
 
 .header {
@@ -110,11 +110,20 @@ body {
 /* This is the operating expenses card section */
 .expense-section {
     padding: 6px;
-    font-size: 1.111em;
+    font-size: 1.05em;
+}
+
+.summary-section {
+    padding: 11px 6px 11px 16px;
+    font-size: 0.8925em;
+}
+
+.summary-item-padding {
+    padding: 6px 0px;
 }
 
 .top-level-expense {
-    padding: 5px 10px;
+    padding: 5px 0px 5px 10px;
 }
 
 .top-level-expense:hover {
@@ -131,8 +140,7 @@ body {
 }
 
 .expense-input-group {
-    font-size: 0.9em;
-    font-weight: 700;
+    font-size: 0.85em;
     padding: 0px 0px 10px 2px;
 }
 
@@ -143,18 +151,31 @@ body {
 button {
     font-size: inherit;
     font-family: inherit;
+    font-weight: inherit;
+}
+
+.cat-total-grid {
+    display: grid;
+    grid-template-columns: 1fr 100px 110px 20px;
+    align-items: end;
+    text-align: right;
+}
+
+.justify-left {
+    text-align: left;
+}
+
+.font-sz-sm {
+    font-size: 0.85em;
 }
 
 .expanding-button {
     border: none;
-    display: flex;
-    font-size: 0.9em;
+    font-size: 0.85em;
     background-color: inherit;
-    justify-content: space-between;
     border-radius: 10px;
     text-align: left;
     width: 100%;
-    font-weight: 700;
     padding: 6px 0px 6px 0px;
 }
 
@@ -163,21 +184,20 @@ button {
 }
 
 .icon {
-   display: inline-block;
-   width: 16px;
-   height: 16px;
-   margin: 0px 4px;
-   background-repeat: no-repeat;
-   background-size: 100% 100%;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0px 4px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 
-
 .svg-expand {
-   background-image: url('../public/icons/chevron-down.svg');
+    background-image: url("../public/icons/chevron-down.svg");
 }
 
 .svg-collapse {
-   background-image: url('../public/icons/chevron-up.svg');
+    background-image: url("../public/icons/chevron-up.svg");
 }
 
 
