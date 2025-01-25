@@ -468,12 +468,22 @@ function ExpenseCatValue({ name, hourly, annual, icon_class = "" }) {
     );
 }
 
-function HoursReqCatValue({ name, daily, weekly, extra_style="summary-item-padding"}) {
+function HoursReqCatValue({ name, daily, weekly, extra_style = "summary-item-padding" }) {
     return (
         <div className={"cat-total-grid " + extra_style}>
             <div className="justify-left">{name}</div>
             <div>{daily}</div>
             <div>{weekly}</div>
+            <div className={"icon"} />
+        </div>
+    );
+}
+
+function TotalsCatValue({ name, total }) {
+    return (
+        <div className={"total-grid"}>
+            <div className="justify-left">{name}</div>
+            <div>${numstr_comma(total)}</div>
             <div className={"icon"} />
         </div>
     );
@@ -506,7 +516,7 @@ function ProfitSummary({ actual_hourly_rate, work_days_per_year, tot_expenses })
     return (
         <>
             <div className="calc-section white-text gray-bg">
-                <HoursReqCatValue name={"HOURS REQUIRED AT $" + actual_hourly_rate.toFixed(2) + "/hr"} daily={"DAILY"} weekly={"WEEKLY"} extra_style={""}/>
+                <HoursReqCatValue name={"HOURS REQUIRED AT $" + actual_hourly_rate.toFixed(2) + "/hr"} daily={"DAILY"} weekly={"WEEKLY"} extra_style={""} />
             </div>
             <div className="gray-text yellow-bg summary-section">
                 <HoursReqCatValue
@@ -531,6 +541,20 @@ function ProfitSummary({ actual_hourly_rate, work_days_per_year, tot_expenses })
                 />
             </div>
         </>
+    );
+}
+
+function FinalTotal({ actual_hourly_rate, total_billable_hours }) {
+    //=((E31*0.9)*C10)/0.75
+    const total_revenue = actual_hourly_rate * total_billable_hours * 0.9 / 0.75
+    const break_even_revenue = total_revenue * 0.8;
+    const break_even_monthly_revenue = break_even_revenue / 12;
+    return (
+        <div className="calc-section white-text gray-bg">
+            <TotalsCatValue name={"ANNUAL REVENUE"} total={total_revenue} />
+            <TotalsCatValue name={"ANNUAL BREAK EVEN REVENUE"} total={break_even_revenue} />
+            <TotalsCatValue name={"MONTHLY BREAK EVEN REVENUE"} total={break_even_monthly_revenue} />
+        </div>
     );
 }
 
@@ -614,6 +638,7 @@ function RateCalc() {
                 work_days_per_year={wd_per_year}
                 tot_expenses={tot_expenses}
             />
+            <FinalTotal actual_hourly_rate={actual_hourly} total_billable_hours={billable_hrs} />
         </div>
     );
 }

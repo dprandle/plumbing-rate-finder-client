@@ -161,6 +161,13 @@ button {
     text-align: right;
 }
 
+.total-grid {
+    display: grid;
+    grid-template-columns: 1fr 200px 20px;
+    align-items: end;
+    text-align: right;
+}
+
 .justify-left {
     text-align: left;
 }
