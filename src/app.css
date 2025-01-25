@@ -78,7 +78,7 @@ body {
 }
 
 .calc-section {
-    font-size: 1.1em;
+    font-size: 0.9em;
     /* The left/right padding add up to totals are so it aligns with the items below it */
     padding: 10px 6px 10px 16px;
 }
@@ -163,7 +163,7 @@ button {
 
 .total-grid {
     display: grid;
-    grid-template-columns: 1fr 200px 20px;
+    grid-template-columns: 1fr 100px 20px;
     align-items: end;
     text-align: right;
 }

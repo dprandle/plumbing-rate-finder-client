@@ -493,7 +493,7 @@ function Expenses({ expenses, update_expense_cb, hours_per_year, tot_expenses, t
     return (
         <>
             <div className="calc-section white-text gray-bg">
-                <ExpenseCatValue name={"EXPENSES"} hourly={tot_per_hr_expense} annual={tot_expenses} />
+                <ExpenseCatValue name={"Expenses"} hourly={tot_per_hr_expense} annual={tot_expenses} />
             </div>
             <div className="gray-text yellow-bg expense-section">
                 <ExpensesCategories
@@ -516,7 +516,7 @@ function ProfitSummary({ actual_hourly_rate, work_days_per_year, tot_expenses })
     return (
         <>
             <div className="calc-section white-text gray-bg">
-                <HoursReqCatValue name={"HOURS REQUIRED AT $" + actual_hourly_rate.toFixed(2) + "/hr"} daily={"DAILY"} weekly={"WEEKLY"} extra_style={""} />
+                <HoursReqCatValue name={"Hours Needed"} daily={"Daily"} weekly={"Weekly"} extra_style={""} />
             </div>
             <div className="gray-text yellow-bg summary-section">
                 <HoursReqCatValue
@@ -551,9 +551,9 @@ function FinalTotal({ actual_hourly_rate, total_billable_hours }) {
     const break_even_monthly_revenue = break_even_revenue / 12;
     return (
         <div className="calc-section white-text gray-bg">
-            <TotalsCatValue name={"ANNUAL REVENUE"} total={total_revenue} />
-            <TotalsCatValue name={"ANNUAL BREAK EVEN REVENUE"} total={break_even_revenue} />
-            <TotalsCatValue name={"MONTHLY BREAK EVEN REVENUE"} total={break_even_monthly_revenue} />
+            <TotalsCatValue name={"Annual Revenue"} total={total_revenue} />
+            <TotalsCatValue name={"Annual Break Even Revenue"} total={break_even_revenue} />
+            <TotalsCatValue name={"Monthly Break Even Revenue"} total={break_even_monthly_revenue} />
         </div>
     );
 }
